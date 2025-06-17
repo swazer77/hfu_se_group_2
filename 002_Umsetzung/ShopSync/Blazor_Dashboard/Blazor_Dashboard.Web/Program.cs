@@ -1,7 +1,15 @@
 using Blazor_Dashboard.Web;
 using Blazor_Dashboard.Web.Components;
+using Syncfusion.Blazor;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddSyncfusionBlazor();
+Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("YOUR_LICENSE
+{
+    // Enable the Syncfusion license validation.
+    options.IgnoreScriptIsolation = true;
+    options.IgnoreLicenseValidation = false;
+});
 
 // Add service defaults & Aspire components.
 builder.AddServiceDefaults();
