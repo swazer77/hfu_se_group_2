@@ -4,8 +4,9 @@
     {
         public int Id { get; set; }
         public string? ProductId { get; set; }
-        public char? ErpChanged { get; set; }
+        public string? Type { get; set; }
         public Attribute? Attribute { get; set; }
+        public char? ErpChanged { get; set; }
         public char? ShopChanged { get; set; }
         public Shop? Shop { get; set; }
     }
