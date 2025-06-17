@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Syncfusion.Blazor.Layouts" Version="29.2.11" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Blazor_Dashboard.ServiceDefaults\Blazor_Dashboard.ServiceDefaults.csproj" />
   </ItemGroup>
 
