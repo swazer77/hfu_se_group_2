@@ -1,4 +1,4 @@
-﻿using Model;
+﻿using HttpModel;
 
 namespace HttpAccess.Wrappers;
 

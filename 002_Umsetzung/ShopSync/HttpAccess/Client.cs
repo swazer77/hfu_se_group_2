@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 using HttpAccess.Wrappers;
-using Model;
+using HttpModel;
 
 namespace HttpAccess;
 
@@ -25,6 +25,13 @@ public class Client
             Password = "3bc2ba9843b0490599b9dd163bd88d4f"
         });
     }
+
+
+    // ############################################################################################
+    // Public methods
+    // ############################################################################################
+
+    // Product ####################################################################################
 
     public List<Product> GetProducts()
     {
@@ -60,6 +67,13 @@ public class Client
         }
     }
 
+
+    // ############################################################################################
+    // Private methods
+    // ############################################################################################
+
+    // Product ####################################################################################
+
     private async Task<List<Product>> GetProductsForUrl(Config config)
     {
         string productGetUrl = $"{config.Url}/products";
@@ -89,6 +103,11 @@ public class Client
         await DeleteRequest(deleteUrl, config);
     }
 
+
+    // ############################################################################################
+    // Basic HTTP methods for GET, POST, and DELETE requests
+    // ############################################################################################
+
     private async Task<string> GetRequest(string getUrl, Config config)
     {
         using var request = new HttpRequestMessage(HttpMethod.Get, getUrl);
@@ -114,6 +133,11 @@ public class Client
         HttpResponseMessage response = await httpClient.SendAsync(request);
         response.EnsureSuccessStatusCode();
     }
+
+
+    // ############################################################################################
+    // Helper methods
+    // ############################################################################################
 
     private static System.Net.Http.Headers.AuthenticationHeaderValue GetAuthorizationHeader(Config config)
     {

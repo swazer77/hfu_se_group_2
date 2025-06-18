@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HttpAccess\HttpAccess.csproj" />
-    <ProjectReference Include="..\Model\Model.csproj" />
+    <ProjectReference Include="..\Model\HttpModel.csproj" />
   </ItemGroup>
 
   <ItemGroup>

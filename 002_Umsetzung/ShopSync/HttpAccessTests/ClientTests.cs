@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using HttpAccess;
-using Model;
+using HttpModel;
 
 namespace HttpAccessTests;
 

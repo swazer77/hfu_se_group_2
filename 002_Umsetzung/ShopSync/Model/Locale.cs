@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Model;
+namespace HttpModel;
 
 public class Locale
 {
