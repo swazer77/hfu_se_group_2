@@ -1,4 +1,5 @@
-﻿using HttpAccess;
+﻿using Core.io;
+using HttpAccess;
 using Model;
 
 namespace Core
@@ -12,7 +13,9 @@ namespace Core
         {
             // Get products from DB where ERP flag is not set 'C'
             Console.WriteLine("Get products from DB with ERP flag 'C'");
-            ShopProducts = GetProductsFromDbWithErpChanged();
+            //ShopProducts = GetProductsFromDbWithErpChanged();
+
+            ErrorLog.LogError("no dba object yet");
             // Send error from DB to ErrorLog
 
             // Send products to API
@@ -28,6 +31,14 @@ namespace Core
             Console.WriteLine("");
             // set time stamp from last run into config file
             // when running again, only products with newer timestamp will be compared against DB
+
+
+            //Todo: to be removed, only for testing purpose
+            //Read log file
+            foreach (string log in ErrorLog.GetErrors())
+            {
+                Console.WriteLine(log);
+            }
         }
 
 
@@ -54,7 +65,7 @@ namespace Core
             }
         }
 
-        private static void SendProductsUpdateToApi(List<Product>? products)
+        private static async Task SendProductsUpdateToApi(List<Product>? products)
         {
             if (products == null || products.Count == 0)
             {
@@ -63,9 +74,16 @@ namespace Core
             }
 
             Client client = new Client();
-            
-            // Assuming the Client class has a method to send products to the API
-            // client.SendProducts(products);
+
+            try
+            {
+                await client.PostProducts(products);
+                Console.WriteLine("Products successfully sent to API.");
+            }
+            catch (Exception ex)
+            {
+                ErrorLog.LogError("Failed to send products to API.", ex);
+            }
         }
     }
 }

@@ -1,27 +1,52 @@
-﻿using System;
-namespace Core.io
+﻿namespace Core.io
 {
     public static class ErrorLog
     {
-        private static readonly string logFilePath = Path.Combine("output", "error.log");
+        private static readonly string ProjectRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", ".."));
+        private static readonly string LogPath = Path.Combine(ProjectRoot, "output", "error.log");
 
         public static void LogError(string message, Exception? ex = null)
         {
             try
             {
-                using StreamWriter writer = new StreamWriter(logFilePath, append: true);
-                writer.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] ERROR: {message}");
+                Directory.CreateDirectory(Path.GetDirectoryName(LogPath)!);
+
+                string newEntry = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] ERROR: {message}{Environment.NewLine}";
+
                 if (ex != null)
                 {
-                    writer.WriteLine($"Exception: {ex.Message}");
-                    writer.WriteLine($"StackTrace: {ex.StackTrace}");
+                    newEntry += $"Exception: {ex.Message}{Environment.NewLine}";
+                    // newEntry += $"StackTrace: {ex.StackTrace}{Environment.NewLine}";
                 }
-                writer.WriteLine(new string('-', 60));
+
+                // Read the existing content if the file exists
+                string existingContent = File.Exists(LogPath) ? File.ReadAllText(LogPath) : string.Empty;
+
+                File.WriteAllText(LogPath, newEntry + existingContent);
             }
             catch
             {
                 // Avoid crashing on logging failure
             }
+        }
+
+        public static List<string> GetErrors()
+        {
+            List<string> errors = new List<string>();
+
+            try
+            {
+                if (File.Exists(LogPath))
+                {
+                    errors.AddRange(File.ReadAllLines(LogPath));
+                }
+            }
+            catch
+            {
+                // Reading silently fails
+            }
+
+            return errors;
         }
     }
 }
