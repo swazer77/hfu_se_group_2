@@ -3,10 +3,15 @@ using HttpAccess;
 
 namespace HttpAccessTests;
 
+/// <summary>
+/// Tests for class <see cref="Client"/>.
+/// The shop API is not mocked, so a real API access as described in the
+/// project description is required.
+/// </summary>
 [TestClass]
 public sealed class ClientTests
 {
-    private Client? client = null;
+    private Client? client;
 
     [TestInitialize]
     public void TestInitialize()
@@ -16,7 +21,7 @@ public sealed class ClientTests
 
 
     [TestMethod]
-    public void TestMethod1()
+    public void TestGetProducts()
     {
         var result = client?.GetProducts();
         foreach (var res in result ?? [])
