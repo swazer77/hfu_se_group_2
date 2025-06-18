@@ -26,6 +26,13 @@ public class Client
         });
     }
 
+
+    // ############################################################################################
+    // Public methods
+    // ############################################################################################
+
+    // Product ####################################################################################
+
     public List<Product> GetProducts()
     {
         List<Product> allProducts = [];
@@ -60,6 +67,13 @@ public class Client
         }
     }
 
+
+    // ############################################################################################
+    // Private methods
+    // ############################################################################################
+
+    // Product ####################################################################################
+
     private async Task<List<Product>> GetProductsForUrl(Config config)
     {
         string productGetUrl = $"{config.Url}/products";
@@ -89,6 +103,11 @@ public class Client
         await DeleteRequest(deleteUrl, config);
     }
 
+
+    // ############################################################################################
+    // Basic HTTP methods for GET, POST, and DELETE requests
+    // ############################################################################################
+
     private async Task<string> GetRequest(string getUrl, Config config)
     {
         using var request = new HttpRequestMessage(HttpMethod.Get, getUrl);
@@ -114,6 +133,11 @@ public class Client
         HttpResponseMessage response = await httpClient.SendAsync(request);
         response.EnsureSuccessStatusCode();
     }
+
+
+    // ############################################################################################
+    // Helper methods
+    // ############################################################################################
 
     private static System.Net.Http.Headers.AuthenticationHeaderValue GetAuthorizationHeader(Config config)
     {
