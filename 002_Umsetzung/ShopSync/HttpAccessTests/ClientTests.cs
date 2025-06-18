@@ -65,6 +65,8 @@ public sealed class ClientTests
 
         client?.PostProducts(postProducts).GetAwaiter().GetResult();
 
-        // Additional assertions can be added here to verify the post operation
+        List<Product> products = client?.GetProducts() ?? [];
+
+        Assert.IsTrue(products.Any(p => p.Id == "test-product-group2"), "Product should be posted successfully");
     }
 }
