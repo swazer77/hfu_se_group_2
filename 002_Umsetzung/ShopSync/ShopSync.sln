@@ -19,6 +19,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShopSync.AppHost", "ShopSyn
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShopSync.ServiceDefaults", "ShopSync.ServiceDefaults\ShopSync.ServiceDefaults.csproj", "{3B4B6349-BFEB-0ABC-2FD9-402A3342ABCA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DBModel", "DBModel\DBModel.csproj", "{0F20799E-B9CB-493E-9EFB-C1586B5BD3EE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbAccess", "DbAccess\DbAccess.csproj", "{4BE03A90-3E11-435B-8C5E-BDD4CFE0D672}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +61,14 @@ Global
 		{3B4B6349-BFEB-0ABC-2FD9-402A3342ABCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B4B6349-BFEB-0ABC-2FD9-402A3342ABCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3B4B6349-BFEB-0ABC-2FD9-402A3342ABCA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F20799E-B9CB-493E-9EFB-C1586B5BD3EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F20799E-B9CB-493E-9EFB-C1586B5BD3EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F20799E-B9CB-493E-9EFB-C1586B5BD3EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F20799E-B9CB-493E-9EFB-C1586B5BD3EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4BE03A90-3E11-435B-8C5E-BDD4CFE0D672}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4BE03A90-3E11-435B-8C5E-BDD4CFE0D672}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4BE03A90-3E11-435B-8C5E-BDD4CFE0D672}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4BE03A90-3E11-435B-8C5E-BDD4CFE0D672}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
