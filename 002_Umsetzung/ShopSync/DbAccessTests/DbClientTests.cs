@@ -32,6 +32,9 @@ public sealed class DbClientTests
 
         DbClient dbClient = new DbClient();
         dbClient.InsertOrUpdateProduct(product);
+        List<DbProduct> products = dbClient.GetAllProducts();
+        Assert.IsNotNull(products, "Products list should not be null.");
+        Assert.IsTrue(products.Any(p => p.ProductId == product.ProductId), "Inserted product should be in the database.");
     }
 
     [TestMethod]
