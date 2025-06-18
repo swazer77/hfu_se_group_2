@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 using HttpAccess.Wrappers;
-using Model;
+using HttpModel;
 
 namespace HttpAccess;
 

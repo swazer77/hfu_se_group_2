@@ -1,7 +1,7 @@
 ﻿using Core.io;
 using Core.testdata;
 using HttpAccess;
-using Model;
+using HttpModel;
 
 namespace Core
 {
