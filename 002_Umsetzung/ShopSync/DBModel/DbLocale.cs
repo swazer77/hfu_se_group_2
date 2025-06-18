@@ -1,7 +1,8 @@
-﻿namespace HttpModel;
+﻿namespace DBModel;
 
-public class Locale
+public class DbLocale
 {
+    public int Id { get; set; }
     public string? Language { get; set; }
     public string? Name { get; set; }
 }
