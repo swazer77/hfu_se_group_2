@@ -79,18 +79,14 @@ public class Client
 
     private async Task DeleteProduct(Product product)
     {
-        Config config = GetConfig(product);
-
         if (string.IsNullOrWhiteSpace(product.Id))
         {
             throw new InvalidDataException("Product ID cannot be null or empty for deletion.");
         }
 
+        Config config = GetConfig(product);
         string deleteUrl = $"{config.Url}/products/{product.Id}";
-        using var request = new HttpRequestMessage(HttpMethod.Delete, deleteUrl);
-        request.Headers.Authorization = GetAuthorizationHeader(config);
-        HttpResponseMessage response = await httpClient.SendAsync(request);
-        response.EnsureSuccessStatusCode();
+        await DeleteRequest(deleteUrl, config);
     }
 
     private async Task<string> GetRequest(string getUrl, Config config)
@@ -106,6 +102,14 @@ public class Client
     {
         using var request = new HttpRequestMessage(HttpMethod.Post, postUrl);
         request.Content = new StringContent(postData, System.Text.Encoding.UTF8, "application/json");
+        request.Headers.Authorization = GetAuthorizationHeader(config);
+        HttpResponseMessage response = await httpClient.SendAsync(request);
+        response.EnsureSuccessStatusCode();
+    }
+
+    private async Task DeleteRequest(string deleteUrl, Config config)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Delete, deleteUrl);
         request.Headers.Authorization = GetAuthorizationHeader(config);
         HttpResponseMessage response = await httpClient.SendAsync(request);
         response.EnsureSuccessStatusCode();
