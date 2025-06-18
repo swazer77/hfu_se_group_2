@@ -6,9 +6,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Syncfusion.Blazor.Layouts" Version="29.2.11" />
-    <PackageReference Include="Syncfusion.Blazor.Themes" Version="29.2.11" />
-  </ItemGroup>
-
 </Project>
