@@ -32,9 +32,9 @@ public sealed class ClientTests
             Debug.WriteLine($"LastModified: {res.Attributes?.LastModified}");
             Debug.WriteLine($"Created: {res.Attributes?.Created}");
             Debug.WriteLine($"Price: {res.Attributes?.Price}");
-            Debug.WriteLine($"Shop: {res.Shop?.Url}");
+            Debug.WriteLine($"Shop: {res.Shop?.Url}\n");
             Debug.WriteLine($"LiveFrom: {res.Attributes?.LiveFrom}");
-            Debug.WriteLine($"LiveTo: {res.Attributes?.LiveUntil}\n");
+            Debug.WriteLine($"LiveTo: {res.Attributes?.LiveUntil}");
         }
         Assert.IsNotNull(result, "Result should not be null");
     }
@@ -45,25 +45,7 @@ public sealed class ClientTests
         List<Product> postProducts = [
             new()
             {
-                Id = "test-product-group2-1",
-                Type = "product",
-                Attributes = new Attributes
-                {
-                    Locale = [new Locale { Language = "de", Name = "Test Product Group 2" }],
-                    Price = 15,
-                    Created = "2025-01-01 00:00:00",
-                    LastModified = "",
-                    LiveFrom = "2025-01-01 00:00:00",
-                    LiveUntil = "2025-12-31 23:59:59"
-                },
-                Shop = new Shop
-                {
-                    Url = "https://test.webstores.ch/boreas/shop/api/v2",
-                }
-            },
-            new()
-            {
-                Id = "test-product-group2-2",
+                Id = "test-product-group2",
                 Type = "product",
                 Attributes = new Attributes
                 {
@@ -80,56 +62,11 @@ public sealed class ClientTests
                 }
             }
         ];
-        client?.PostProducts(postProducts).GetAwaiter().GetResult();
-        List<Product> products = client?.GetProducts() ?? [];
-        Assert.IsTrue(products.Any(p => p.Id == "test-product-group2-1"), "Product should be posted successfully");
-        Assert.IsTrue(products.Any(p => p.Id == "test-product-group2-2"), "Product should be posted successfully");
-    }
 
-    [TestMethod]
-    public void TestDeleteProducts()
-    {
-        List<Product> deleteProducts = [
-            new()
-            {
-                Id = "test-product-group2-1",
-                Type = "product",
-                Attributes = new Attributes
-                {
-                    Locale = [new Locale { Language = "de", Name = "Test Product Group 2" }],
-                    Price = 15,
-                    Created = "2025-01-01 00:00:00",
-                    LastModified = "",
-                    LiveFrom = "2025-01-01 00:00:00",
-                    LiveUntil = "2025-12-31 23:59:59"
-                },
-                Shop = new Shop
-                {
-                    Url = "https://test.webstores.ch/boreas/shop/api/v2",
-                }
-            },
-            new()
-            {
-                Id = "test-product-group2-2",
-                Type = "product",
-                Attributes = new Attributes
-                {
-                    Locale = [new Locale { Language = "de", Name = "Test Product Group 2" }],
-                    Price = 15,
-                    Created = "2025-01-01 00:00:00",
-                    LastModified = "",
-                    LiveFrom = "2025-01-01 00:00:00",
-                    LiveUntil = "2025-12-31 23:59:59"
-                },
-                Shop = new Shop
-                {
-                    Url = "https://test.webstores.ch/boreas/shop/api/v2",
-                }
-            }
-        ];
-        client?.DeleteProducts(deleteProducts).GetAwaiter().GetResult();
+        client?.PostProducts(postProducts).GetAwaiter().GetResult();
+
         List<Product> products = client?.GetProducts() ?? [];
-        Assert.IsFalse(products.Any(p => p.Id == "test-product-group2-1"), "Product should be deleted successfully");
-        Assert.IsFalse(products.Any(p => p.Id == "test-product-group2-2"), "Product should be deleted successfully");
+
+        Assert.IsTrue(products.Any(p => p.Id == "test-product-group2"), "Product should be posted successfully");
     }
 }

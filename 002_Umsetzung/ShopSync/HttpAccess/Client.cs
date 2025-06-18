@@ -52,61 +52,51 @@ public class Client
         }
     }
 
-    public async Task DeleteProducts(List<Product> products)
-    {
-        foreach (Product product in products)
-        {
-            await DeleteProduct(product);
-        }
-    }
-
     private async Task<List<Product>> GetProductsForUrl(Config config)
     {
         string productGetUrl = $"{config.Url}/products";
+        
         string json = await GetRequest(productGetUrl, config);
+
         ProductsWrapper? productResponse = JsonSerializer.Deserialize<ProductsWrapper>(json, jsonSerializerOptions);
+
         return productResponse?.Data ?? [];
     }
 
     private async Task PostProduct(Product product)
     {
-        Config config = GetConfig(product);
+        Config config = configs.Find(c => c.Url == product.Shop?.Url)
+                        ?? throw new InvalidDataException("Could not find matching shop configuration.");
+
         string productPostUrl = $"{config.Url}/products?update_if_exists=true";
+
         ProductWrapper postProduct = new() { Data = product };
+
         string json = JsonSerializer.Serialize(postProduct, jsonSerializerOptions);
+
         await PostRequest(productPostUrl, config, json);
-    }
-
-    private async Task DeleteProduct(Product product)
-    {
-        Config config = GetConfig(product);
-
-        if (string.IsNullOrWhiteSpace(product.Id))
-        {
-            throw new InvalidDataException("Product ID cannot be null or empty for deletion.");
-        }
-
-        string deleteUrl = $"{config.Url}/products/{product.Id}";
-        using var request = new HttpRequestMessage(HttpMethod.Delete, deleteUrl);
-        request.Headers.Authorization = GetAuthorizationHeader(config);
-        HttpResponseMessage response = await httpClient.SendAsync(request);
-        response.EnsureSuccessStatusCode();
     }
 
     private async Task<string> GetRequest(string getUrl, Config config)
     {
         using var request = new HttpRequestMessage(HttpMethod.Get, getUrl);
+
         request.Headers.Authorization = GetAuthorizationHeader(config);
+
         HttpResponseMessage response = await httpClient.SendAsync(request);
         response.EnsureSuccessStatusCode();
+
         return await response.Content.ReadAsStringAsync();
     }
 
     private async Task PostRequest(string postUrl, Config config, string postData)
     {
         using var request = new HttpRequestMessage(HttpMethod.Post, postUrl);
+
         request.Content = new StringContent(postData, System.Text.Encoding.UTF8, "application/json");
+
         request.Headers.Authorization = GetAuthorizationHeader(config);
+
         HttpResponseMessage response = await httpClient.SendAsync(request);
         response.EnsureSuccessStatusCode();
     }
@@ -120,17 +110,5 @@ public class Client
     private static void SetShop(Product product, Config config)
     {
         product.Shop = new Shop { Url = config.Url };
-    }
-
-    private Config GetConfig(object category)
-    {
-        Config? config = null;
-
-        if (category is Product product)
-        {
-            config = configs.Find(c => c.Url == product.Shop?.Url);
-        }
-
-        return config ?? throw new InvalidDataException("Could not find matching shop configuration.");
     }
 }
