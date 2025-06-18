@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Text.Json;
 using Model;
 
 namespace HttpAccess;
@@ -6,7 +7,13 @@ namespace HttpAccess;
 public class Client
 {
     private readonly List<Config> configs = [];
-    private readonly HttpClient httpClient;
+    private readonly HttpClient httpClient = new();
+
+    private readonly JsonSerializerOptions jsonSerializerOptions = new(new JsonSerializerOptions())
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
+        PropertyNameCaseInsensitive = true
+    };
 
     public Client()
     {
@@ -17,16 +24,8 @@ public class Client
             Username = "boreas",
             Password = "3bc2ba9843b0490599b9dd163bd88d4f"
         });
-        httpClient = new HttpClient();
     }
 
-    /// <summary>
-    /// Retrieves a list of all products across multiple configurations (shops).
-    /// </summary>
-    /// <remarks>This method aggregates products from multiple sources defined by the configurations. Each
-    /// product is assigned a shop identifier to ensure multi-tenancy.</remarks>
-    /// <returns>A list of <see cref="Product"/> objects representing all products retrieved. The list will be empty if no
-    /// products are found.</returns>
     public List<Product> GetProducts()
     {
         List<Product> allProducts = [];
@@ -44,50 +43,77 @@ public class Client
         }
         return allProducts;
     }
-    
+
+    public async Task PostProducts(List<Product> products)
+    {
+        foreach (Product product in products)
+        {
+            await PostProduct(product);
+        }
+    }
+
     private async Task<List<Product>> GetProductsForUrl(Config config)
     {
         string productGetUrl = $"{config.Url}/products";
         
         string json = await GetRequest(productGetUrl, config);
 
-        var productResponse = System.Text.Json.JsonSerializer.Deserialize<ProductsResponse>(json, new System.Text.Json.JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        });
+        var productResponse = JsonSerializer.Deserialize<ProductsResponse>(json, jsonSerializerOptions);
 
         return productResponse?.Data ?? [];
     }
 
-    //private void PostProduct(Config config, Product )
-    //{
-    //    string productPostUrl = $"{config.Url}/products";
+    private async Task PostProduct(Product product)
+    {
+        Config config = configs.Find(c => c.Url == product.Shop?.Url)
+                        ?? throw new InvalidDataException("Could not find matching shop configuration.");
 
-    //    using (var request = new HttpRequestMessage(HttpMethod.Post, productPostUrl))
-    //    {
-    //        request.Headers.Authorization = new System.Net.Http.Headers.
-    //            AuthenticationHeaderValue("Basic", Convert.ToBase64String(
-    //                System.Text.Encoding.UTF8.GetBytes($"{config.Username}:{config.Password}")));
-    //        var response = await httpClient.SendAsync(request);
-    //        response.EnsureSuccessStatusCode();
-    //        json = await response.Content.ReadAsStringAsync();
-    //    }
+        string productPostUrl = $"{config.Url}/products";
 
-    //}
+        ProductPostRequest postProduct = new ProductPostRequest
+        {
+            UpdateIfExists = true,
+            Data = product
+        };
+
+        string json = JsonSerializer.Serialize(postProduct, jsonSerializerOptions);
+
+        await PostRequest(productPostUrl, config, json);
+    }
 
     private async Task<string> GetRequest(string getUrl, Config config)
     {
         using var request = new HttpRequestMessage(HttpMethod.Get, getUrl);
 
-        request.Headers.Authorization = new System.Net.Http.Headers.
-            AuthenticationHeaderValue("Basic", Convert.ToBase64String(
-                System.Text.Encoding.UTF8.GetBytes($"{config.Username}:{config.Password}")));
+        request.Headers.Authorization = GetAuthorizationHeader(config);
 
         HttpResponseMessage response = await httpClient.SendAsync(request);
         response.EnsureSuccessStatusCode();
 
-        string json = await response.Content.ReadAsStringAsync();
-        return json;
+        return await response.Content.ReadAsStringAsync();
+    }
+
+    private async Task PostRequest(string postUrl, Config config, string postData)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Post, postUrl);
+
+        //Debug.WriteLine(postData);
+
+        request.Content = new StringContent(postData, System.Text.Encoding.UTF8, "application/json");
+
+        //Debug.Write(request.Content.ToString());
+
+        request.Headers.Authorization = GetAuthorizationHeader(config);
+
+        HttpResponseMessage response = await httpClient.SendAsync(request);
+        Debug.WriteLine($"Response: {await response.Content.ReadAsStringAsync()}");
+        response.EnsureSuccessStatusCode();
+    }
+
+    private static System.Net.Http.Headers.AuthenticationHeaderValue GetAuthorizationHeader(Config config)
+    {
+        string credentials = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes($"{config.Username}:{config.Password}"));
+        return new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", credentials);
     }
 
     private static void SetShop(Product product, Config config)
