@@ -1,0 +1,4 @@
+﻿Apfel
+Birne
+Kirsche
+Orange

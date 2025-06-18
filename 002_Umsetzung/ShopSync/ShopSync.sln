@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShopSync.AppHost", "ShopSyn
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShopSync.ServiceDefaults", "ShopSync.ServiceDefaults\ShopSync.ServiceDefaults.csproj", "{3B4B6349-BFEB-0ABC-2FD9-402A3342ABCA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteticHtmlServer", "SteticHtmlServer\SteticHtmlServer.csproj", "{2B857B61-D261-C6E4-EE1A-A56B9A1B8762}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,10 @@ Global
 		{3B4B6349-BFEB-0ABC-2FD9-402A3342ABCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B4B6349-BFEB-0ABC-2FD9-402A3342ABCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3B4B6349-BFEB-0ABC-2FD9-402A3342ABCA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B857B61-D261-C6E4-EE1A-A56B9A1B8762}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B857B61-D261-C6E4-EE1A-A56B9A1B8762}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B857B61-D261-C6E4-EE1A-A56B9A1B8762}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B857B61-D261-C6E4-EE1A-A56B9A1B8762}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
