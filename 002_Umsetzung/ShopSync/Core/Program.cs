@@ -11,6 +11,8 @@ namespace Core
         public static List<Product>? ProductsUpdateToApi;
         public static List<Product>? ProductsDeleteToApi;
 
+        //private List<ProductEntity> allEntities = new List<ProductEntity>();
+
         //Todo: to be removed
         public static TestApiProducts TestApi = new TestApiProducts();
 
@@ -32,7 +34,7 @@ namespace Core
 
 
             //ProductsUpdateToApi = TestApi.GetCreateProducts();
-            //SendProductsUpdateToApi();
+            SendProductsUpdateToApi();
             //ProductsUpdateToApi = TestApi.GetUpdateProduct();
             //SendProductsUpdateToApi();
 
@@ -40,7 +42,7 @@ namespace Core
             
             Console.WriteLine("Send deletion to API");
 
-            ProductsDeleteToApi = TestApi.GetDeleteProduct();
+            //ProductsDeleteToApi = TestApi.GetDeleteProduct();
             SendProductsDeleteToApi();
             
 
@@ -64,7 +66,7 @@ namespace Core
         }
 
 
-        private static void GetProductsFromDbWithErpChanged()
+        public static void GetProductsFromDbWithErpChanged()
         {
             // List<ProductEntity> dbProducts = DBAccess.GetAllProductsErpChanged();
 
@@ -86,7 +88,7 @@ namespace Core
 
         }
 
-        private static void GetProductsFromApi()
+        public static void GetProductsFromApi()
         {
             Client client = new Client();
             List<Product> allProducts = client.GetProducts();
@@ -102,7 +104,7 @@ namespace Core
             }
         }
 
-        private static async void SendProductsUpdateToApi()
+        public static async void SendProductsUpdateToApi()
         {
             if (ProductsUpdateToApi == null || ProductsUpdateToApi.Count == 0)
             {
@@ -123,7 +125,7 @@ namespace Core
             }
         }
 
-        private static async void SendProductsDeleteToApi()
+        public static async void SendProductsDeleteToApi()
         {
             if (ProductsDeleteToApi == null || ProductsDeleteToApi.Count == 0) return;
 
