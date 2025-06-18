@@ -50,7 +50,7 @@ public sealed class ClientTests
                 Attributes = new Attributes
                 {
                     Locale = [new Locale { Language = "de", Name = "Test Product Group 2" }],
-                    Price = 99.90,
+                    Price = 15,
                     Created = "2025-01-01 00:00:00",
                     LastModified = "",
                     LiveFrom = "2025-01-01 00:00:00",

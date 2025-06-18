@@ -1,8 +1,8 @@
 ﻿using Model;
 
-namespace Model;
+namespace HttpAccess.Wrappers;
 
-public class ProductsResponse
+public class ProductsWrapper
 {
     public List<Product>? Data { get; set; }
 }

@@ -1,5 +1,5 @@
-﻿using System.Diagnostics;
-using System.Text.Json;
+﻿using System.Text.Json;
+using HttpAccess.Wrappers;
 using Model;
 
 namespace HttpAccess;
@@ -58,7 +58,7 @@ public class Client
         
         string json = await GetRequest(productGetUrl, config);
 
-        var productResponse = JsonSerializer.Deserialize<ProductsResponse>(json, jsonSerializerOptions);
+        ProductsWrapper? productResponse = JsonSerializer.Deserialize<ProductsWrapper>(json, jsonSerializerOptions);
 
         return productResponse?.Data ?? [];
     }
@@ -68,13 +68,9 @@ public class Client
         Config config = configs.Find(c => c.Url == product.Shop?.Url)
                         ?? throw new InvalidDataException("Could not find matching shop configuration.");
 
-        string productPostUrl = $"{config.Url}/products";
+        string productPostUrl = $"{config.Url}/products?update_if_exists=true";
 
-        ProductPostRequest postProduct = new ProductPostRequest
-        {
-            UpdateIfExists = true,
-            Data = product
-        };
+        ProductWrapper postProduct = new() { Data = product };
 
         string json = JsonSerializer.Serialize(postProduct, jsonSerializerOptions);
 
@@ -97,16 +93,11 @@ public class Client
     {
         using var request = new HttpRequestMessage(HttpMethod.Post, postUrl);
 
-        //Debug.WriteLine(postData);
-
         request.Content = new StringContent(postData, System.Text.Encoding.UTF8, "application/json");
-
-        //Debug.Write(request.Content.ToString());
 
         request.Headers.Authorization = GetAuthorizationHeader(config);
 
         HttpResponseMessage response = await httpClient.SendAsync(request);
-        Debug.WriteLine($"Response: {await response.Content.ReadAsStringAsync()}");
         response.EnsureSuccessStatusCode();
     }
 
