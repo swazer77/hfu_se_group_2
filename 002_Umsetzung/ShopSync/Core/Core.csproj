@@ -8,20 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DbAccess\DbAccess.csproj" />
-    <ProjectReference Include="..\DBModel\DBModel.csproj" />
-    <ProjectReference Include="..\HttpAccess\HttpAccess.csproj" />
-    <ProjectReference Include="..\Model\HttpModel.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="output\" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="data.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <ProjectReference Include="..\DBModel\DBModel.csproj" />
+    <ProjectReference Include="..\HttpAccess\HttpAccess.csproj" />
+    <ProjectReference Include="..\HttpModel\HttpModel.csproj" />
   </ItemGroup>
 
 </Project>

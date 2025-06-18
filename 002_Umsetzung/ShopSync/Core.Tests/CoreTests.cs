@@ -1,5 +1,4 @@
 ﻿using Core.io;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 
 namespace Core.Tests
 {
