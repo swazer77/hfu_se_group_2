@@ -19,7 +19,7 @@ public class DbClient
             .Where(p => p.ShopChanged != 'D' && p.ErpChanged != 'D').ToList();
     }
 
-    public List<DbProduct> GetAllErpChanged()
+    public List<DbProduct> GetAllProductsErpChanged()
     {
         using Context dbContext = new();
         return dbContext.Product
