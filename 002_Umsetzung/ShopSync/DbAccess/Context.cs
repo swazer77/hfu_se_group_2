@@ -4,8 +4,8 @@ namespace DbAccess;
 public class Context : DbContext
 {
     public DbSet<DBModel.DbProduct> Product { get; set; }
-    public DbSet<DBModel.DbLocale> Locale { get; set; }
-    public DbSet<DBModel.DbAttributes> Attributes { get; set; }
+    //public DbSet<DBModel.DbLocale> Locale { get; set; }
+    //public DbSet<DBModel.DbAttributes> Attributes { get; set; }
     public DbSet<DBModel.DbShop> Shop { get; set; }
 
     // ToDo: Configuration via appsettings.json or similar

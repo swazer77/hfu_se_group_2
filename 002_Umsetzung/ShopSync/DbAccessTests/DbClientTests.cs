@@ -11,27 +11,27 @@ public sealed class DbClientTests
     {
         DbProduct product = new DbProduct
         {
-            ProductId = "TestProduct1235",
+            ProductId = "TestProduct3",
             Type = "TestType",
             Attributes = new()
             {
-                Locale = [new DbLocale { Language = "de", Name = "Test Product Group 2" }],
-                Price = 15,
+                Locale = [new DbLocale { Language = "de", Name = "Test Product 3 Group 2" }],
+                Price = 99.90,
                 Created = DateTime.Now,
                 LastModified = DateTime.Now,
                 LiveFrom = DateTime.Now,
                 LiveUntil = DateTime.Now
             },
-            ErpChanged = 'C',
+            ErpChanged = null,
             ShopChanged = 'C',
             Shop = new DbShop
             {
-                Url = "https://test.webstores.ch/boreas/shop/api/v2"
+                Url = "https://test.webstores2.ch/boreas/shop/api/v2"
             }
         };
 
         DbClient dbClient = new DbClient();
-        dbClient.InsertProduct(product);
+        dbClient.InsertOrUpdateProduct(product);
     }
 
     [TestMethod]
