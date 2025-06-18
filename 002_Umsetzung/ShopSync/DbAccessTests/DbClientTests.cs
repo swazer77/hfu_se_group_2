@@ -7,34 +7,86 @@ namespace DbAccessTests;
 public sealed class DbClientTests
 {
     [TestMethod]
-    public void TestInsertProduct()
+    public void TestInsertProducts()
     {
-        DbProduct product = new DbProduct
+        List<DbProduct> products = new()
         {
-            ProductId = "TestProduct3",
-            Type = "TestType",
-            Attributes = new()
+            new DbProduct
             {
-                Locale = [new DbLocale { Language = "de", Name = "Test Product 3 Group 2" }],
-                Price = 99.90,
-                Created = DateTime.Now,
-                LastModified = DateTime.Now,
-                LiveFrom = DateTime.Now,
-                LiveUntil = DateTime.Now
+                ProductId = "TestProduct1",
+                Type = "TestType",
+                Attributes = new()
+                {
+                    Locale = [new DbLocale { Language = "de", Name = "Test Product 1" }],
+                    Price = 19.90,
+                    Created = DateTime.Now,
+                    LastModified = DateTime.Now,
+                    LiveFrom = DateTime.Now,
+                    LiveUntil = DateTime.Now
+                },
+                ErpChanged = null,
+                ShopChanged = 'I',
+                Shop = new DbShop
+                {
+                    Url = "https://test.webstores.ch/boreas/shop/api/v2"
+                }
             },
-            ErpChanged = null,
-            ShopChanged = 'C',
-            Shop = new DbShop
+            new DbProduct
             {
-                Url = "https://test.webstores2.ch/boreas/shop/api/v2"
+                ProductId = "TestProduct2",
+                Type = "TestType",
+                Attributes = new()
+                {
+                    Locale = [new DbLocale { Language = "de", Name = "Test Product 2" }],
+                    Price = 29.90,
+                    Created = DateTime.Now,
+                    LastModified = DateTime.Now,
+                    LiveFrom = DateTime.Now,
+                    LiveUntil = DateTime.Now
+                },
+                ErpChanged = null,
+                ShopChanged = 'C',
+                Shop = new DbShop
+                {
+                    Url = "https://test.webstores.ch/boreas/shop/api/v2"
+                }
+            },
+            new DbProduct
+            {
+                ProductId = "TestProduct3",
+                Type = "TestType",
+                Attributes = new()
+                {
+                    Locale = [new DbLocale { Language = "de", Name = "Test Product 2" }],
+                    Price = 99.90,
+                    Created = DateTime.Now,
+                    LastModified = DateTime.Now,
+                    LiveFrom = DateTime.Now,
+                    LiveUntil = DateTime.Now
+                },
+                ErpChanged = null,
+                ShopChanged = 'D',
+                Shop = new DbShop
+                {
+                    Url = "https://test.webstores2.ch/boreas/shop/api/v2"
+                }
             }
         };
 
         DbClient dbClient = new DbClient();
-        dbClient.InsertOrUpdateProduct(product);
-        List<DbProduct> products = dbClient.GetAllProducts();
-        Assert.IsNotNull(products, "Products list should not be null.");
-        Assert.IsTrue(products.Any(p => p.ProductId == product.ProductId), "Inserted product should be in the database.");
+        Context dbContext = new Context();
+        // Ensure the database is created and cleared for testing
+        dbContext.Database.EnsureDeleted();
+        dbContext.Database.EnsureCreated();
+        dbClient.InsertOrUpdateProducts(products);
+        List<DbProduct> dbProducts = dbContext.Product.ToList();
+        List<DbShop> dbShops = dbContext.Shop.ToList();
+        Assert.IsNotNull(dbProducts, "Products list should not be null.");
+        Assert.IsTrue(dbProducts.Count == 3, "Expected at least 3 products in the database.");
+        Assert.IsTrue(dbShops.Count == 2, "Duplicate Shops were created");
+        Assert.IsTrue(dbProducts.Any(p => p.ProductId == "TestProduct1"), "Inserted product should be in the database.");
+        Assert.IsTrue(dbProducts.Any(p => p.ProductId == "TestProduct2"), "Inserted product should be in the database.");
+        Assert.IsTrue(dbProducts.Any(p => p.ProductId == "TestProduct3"), "Inserted product should be in the database.");
     }
 
     [TestMethod]

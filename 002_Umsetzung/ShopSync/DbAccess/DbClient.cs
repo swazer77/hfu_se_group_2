@@ -26,7 +26,15 @@ public class DbClient
             .Where(p => p.ShopChanged != 'D' && p.ErpChanged != 'D' && p.ErpChanged != null).ToList();
     }
 
-    public void InsertOrUpdateProduct(DbProduct product)
+    public void InsertOrUpdateProducts(List<DbProduct> products)
+    {
+        foreach (DbProduct product in products)
+        {
+            InsertOrUpdateProduct(product);
+        }
+    }
+
+    private void InsertOrUpdateProduct(DbProduct product)
     {
         if (product == null)
         {
