@@ -1,0 +1,12 @@
+{
+    "Database": {
+        "MsSqlConnectionString": "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=aplixERP_Shop_G2"
+    },
+    "Shops": [
+        {
+            "Url": "https://test.webstores.ch/boreas/shop/api/v2",
+            "Username": "username",
+            "Password": "password"
+        }
+    ]
+}

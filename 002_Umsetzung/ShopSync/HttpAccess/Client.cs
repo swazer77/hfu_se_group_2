@@ -1,12 +1,14 @@
-﻿using System.Text.Json;
+﻿using System.Diagnostics;
+using System.Text.Json;
 using HttpAccess.Wrappers;
 using HttpModel;
+using Utility;
 
 namespace HttpAccess;
 
 public class Client
 {
-    private readonly List<Config> configs = [];
+    private readonly List<ShopConfig> configs;
     private readonly HttpClient httpClient = new();
 
     private readonly JsonSerializerOptions jsonSerializerOptions = new(new JsonSerializerOptions())
@@ -17,13 +19,11 @@ public class Client
 
     public Client()
     {
-        //ToDo: make configurable
-        configs.Add(new Config
+        configs = new ConfigReader().GetShopConfig();
+        if (configs.Count == 0)
         {
-            Url = "https://test.webstores.ch/boreas/shop/api/v2",
-            Username = "boreas",
-            Password = "3bc2ba9843b0490599b9dd163bd88d4f"
-        });
+            throw new InvalidDataException("No shop configurations found. Please check your config file.");
+        }
     }
 
 
@@ -37,7 +37,7 @@ public class Client
     {
         List<Product> allProducts = [];
 
-        foreach (Config config in configs)
+        foreach (ShopConfig config in configs)
         {
             List<Product> thisProducts = GetProductsForUrl(config).Result;
 
@@ -74,7 +74,7 @@ public class Client
 
     // Product ####################################################################################
 
-    private async Task<List<Product>> GetProductsForUrl(Config config)
+    private async Task<List<Product>> GetProductsForUrl(ShopConfig config)
     {
         string productGetUrl = $"{config.Url}/products";
         string json = await GetRequest(productGetUrl, config);
@@ -84,7 +84,7 @@ public class Client
 
     private async Task PostProduct(Product product)
     {
-        Config config = GetConfig(product);
+        ShopConfig config = GetConfig(product);
         string productPostUrl = $"{config.Url}/products?update_if_exists=true";
         ProductWrapper postProduct = new() { Data = product };
         string json = JsonSerializer.Serialize(postProduct, jsonSerializerOptions);
@@ -98,7 +98,7 @@ public class Client
             throw new InvalidDataException("Product ID cannot be null or empty for deletion.");
         }
 
-        Config config = GetConfig(product);
+        ShopConfig config = GetConfig(product);
         string deleteUrl = $"{config.Url}/products/{product.Id}";
         await DeleteRequest(deleteUrl, config);
     }
@@ -108,7 +108,7 @@ public class Client
     // Basic HTTP methods for GET, POST, and DELETE requests
     // ############################################################################################
 
-    private async Task<string> GetRequest(string getUrl, Config config)
+    private async Task<string> GetRequest(string getUrl, ShopConfig config)
     {
         using var request = new HttpRequestMessage(HttpMethod.Get, getUrl);
         request.Headers.Authorization = GetAuthorizationHeader(config);
@@ -117,7 +117,7 @@ public class Client
         return await response.Content.ReadAsStringAsync();
     }
 
-    private async Task PostRequest(string postUrl, Config config, string postData)
+    private async Task PostRequest(string postUrl, ShopConfig config, string postData)
     {
         using var request = new HttpRequestMessage(HttpMethod.Post, postUrl);
         request.Content = new StringContent(postData, System.Text.Encoding.UTF8, "application/json");
@@ -126,7 +126,7 @@ public class Client
         response.EnsureSuccessStatusCode();
     }
 
-    private async Task DeleteRequest(string deleteUrl, Config config)
+    private async Task DeleteRequest(string deleteUrl, ShopConfig config)
     {
         using var request = new HttpRequestMessage(HttpMethod.Delete, deleteUrl);
         request.Headers.Authorization = GetAuthorizationHeader(config);
@@ -139,20 +139,20 @@ public class Client
     // Helper methods
     // ############################################################################################
 
-    private static System.Net.Http.Headers.AuthenticationHeaderValue GetAuthorizationHeader(Config config)
+    private static System.Net.Http.Headers.AuthenticationHeaderValue GetAuthorizationHeader(ShopConfig config)
     {
         string credentials = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes($"{config.Username}:{config.Password}"));
         return new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", credentials);
     }
 
-    private static void SetShop(Product product, Config config)
+    private static void SetShop(Product product, ShopConfig config)
     {
         product.Shop = new Shop { Url = config.Url };
     }
 
-    private Config GetConfig(object category)
+    private ShopConfig GetConfig(object category)
     {
-        Config? config = null;
+        ShopConfig? config = null;
 
         if (category is Product product)
         {

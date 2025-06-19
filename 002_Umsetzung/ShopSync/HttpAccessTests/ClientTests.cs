@@ -40,7 +40,7 @@ public sealed class ClientTests
     }
 
     [TestMethod]
-    public void TestPostProducts()
+    public void TestPostAndDeleteProducts()
     {
         List<Product> postProducts = [
             new()
@@ -84,11 +84,7 @@ public sealed class ClientTests
         List<Product> products = client?.GetProducts() ?? [];
         Assert.IsTrue(products.Any(p => p.Id == "test-product-group2-1"), "Product should be posted successfully");
         Assert.IsTrue(products.Any(p => p.Id == "test-product-group2-2"), "Product should be posted successfully");
-    }
 
-    [TestMethod]
-    public void TestDeleteProducts()
-    {
         List<Product> deleteProducts = [
             new()
             {
@@ -128,7 +124,7 @@ public sealed class ClientTests
             }
         ];
         client?.DeleteProducts(deleteProducts).GetAwaiter().GetResult();
-        List<Product> products = client?.GetProducts() ?? [];
+        products = client?.GetProducts() ?? [];
         Assert.IsFalse(products.Any(p => p.Id == "test-product-group2-1"), "Product should be deleted successfully");
         Assert.IsFalse(products.Any(p => p.Id == "test-product-group2-2"), "Product should be deleted successfully");
     }

@@ -1,5 +1,7 @@
 ﻿using DBModel;
 using Microsoft.EntityFrameworkCore;
+using Utility;
+
 namespace DbAccess;
 
 public class Context : DbContext
@@ -9,17 +11,22 @@ public class Context : DbContext
     public DbSet<DbAttributes> Attributes { get; set; }
     public DbSet<DbShop> Shop { get; set; }
 
-    // ToDo: Configuration via appsettings.json or similar
+    private readonly string connectionString;
+
+    public Context()
+    {
+        DbConfig dbConfig = new ConfigReader().GetDatabaseConfig();
+        if (string.IsNullOrEmpty(dbConfig.MsSqlConnectionString))
+        {
+            throw new InvalidOperationException("Database connection string is not configured.");
+        }
+        connectionString = dbConfig.MsSqlConnectionString;
+    }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        //optionsBuilder.UseSqlServer(
-        //    @"Server=sql.aplix.ch,14444;Initial Catalog=aplixERP_Shop_G2;User Id=aplixShop_G2;Password=apl!xSHOPHaEfU_G2;TrustServerCertificate=True;",
-        //    builder => builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null)
-        //);
-        optionsBuilder.UseSqlServer(
-            @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=aplixERP_Shop_G2",
-            builder => builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null)
-        );
+        optionsBuilder.UseSqlServer(connectionString,
+            builder => builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null));
         base.OnConfiguring(optionsBuilder);
     }
 
