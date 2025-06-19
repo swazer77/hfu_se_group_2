@@ -39,7 +39,7 @@ namespace Core.mapper
             return products;
         }
 
-        public static List<DbProduct> ToEntity(List<Product> products)
+        public static List<DbProduct> ToEntity(List<Product>? products)
         {
             List<DbProduct> entities = new List<DbProduct>();
 

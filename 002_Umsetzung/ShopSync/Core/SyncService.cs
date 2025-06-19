@@ -1,4 +1,5 @@
-﻿using Core.io;
+﻿using System.Runtime.InteropServices.JavaScript;
+using Core.io;
 using Core.mapper;
 using Core.testdata;
 using DbAccess;
@@ -10,20 +11,35 @@ namespace Core
 {
     public class SyncService
     {
+        #region variable for Sync to Api
         public List<Product>? ProductsUpdateToApi { get; set; }
         public List<Product>? ProductsDeleteToApi { get; set; }
-
-        public List<DbProduct>? AllDbEntities { get; set; }
         public List<DbProduct>? DbEntitiesErp { get; set; }
         public List<DbProduct>? DbEntitiesDel { get; set; }
+        #endregion
 
+        #region variable for Sync to DB
+        public List<DbProduct>? AllDbEntities { get; set; }
+        public List<DbProduct>? ProductToUpdateInDb { get; set; }
+        public List<DbProduct>? ProductToDeleteInDb { get; set; }
+        public List<Product>? AllApiProducts { get; set; }
+        public List<DbProduct>? AllApiProductsMapped { get; set; }
+        #endregion
+
+
+        #region test data
         private readonly TestApiProducts testApi = new TestApiProducts();
+        #endregion
 
         public readonly DbClient DbClient = new DbClient();
         public readonly Client Client = new Client();
 
         public void Run()
         {
+            Init();
+            ErrorLog.LogError("Start Synchronisation...");
+
+            #region Step 1
             //// Step 1
             //// Sync from DB to Api
             //// Get all updated Data form the DB, map it and send depended on the flag to the delete or update endpoint
@@ -42,26 +58,50 @@ namespace Core
             {
                 ErrorLog.LogError("Something went wrong while sync the data from the DB and sending to the API.", e);
             }
-            
-
+            #endregion
 
             //// Step 2
             //// 
             ////
-            Console.WriteLine("Get products from HttpAccess");
-            GetProductsFromApi();
+            try
+            {
+                Console.WriteLine("Get all products from HttpAccess");
+                GetProductsFromApi();
+                Console.WriteLine("Get all products from Db");
+                GetAllDataFromDb();
+                Console.WriteLine("Compare DB with API");
+                CompareApiWithDb();
+                Console.WriteLine("Send update to DB");
+                SendProductsToDb();
+            }
+            catch (Exception e)
+            {
+                ErrorLog.LogError("Something went wrong while sync the data from the API to the Db.", e);
+                
+            }
 
-            
-
-            Console.WriteLine("Get products from HttpAccess");
-            GetProductsFromApi();
-
+            ErrorLog.LogError("End Synchronisation");
             foreach (string log in ErrorLog.GetErrors())
             {
                 Console.WriteLine(log);
             }
+
         }
 
+        public void Init()
+        {
+            ProductsUpdateToApi = new List<Product>();
+            ProductsDeleteToApi = new List<Product>();
+            DbEntitiesDel = new List<DbProduct>();
+            DbEntitiesErp = new List<DbProduct>();
+            AllDbEntities = new List<DbProduct>();
+            ProductToUpdateInDb = new List<DbProduct>();
+            ProductToDeleteInDb = new List<DbProduct>();
+            AllApiProducts = new List<Product>();
+            AllApiProductsMapped = new List<DbProduct>();
+        }
+
+        #region Sync Step 1 methodes
         public void GetProductsFromDbWithErpChanged()
         {
             List<DbProduct> dbProducts = DbClient.GetAllProductsErpChanged();
@@ -75,13 +115,6 @@ namespace Core
             ProductsUpdateToApi = ProductMapper.ToModel(DbEntitiesErp);
         }
 
-        public void GetProductsFromApi()
-        {
-            
-            List<Product> allProducts = Client.GetProducts();
-            Console.WriteLine($"Found {allProducts.Count} products from API.");
-        }
-
         public async Task SendProductsUpdateToApi()
         {
             if (ProductsUpdateToApi == null || ProductsUpdateToApi.Count == 0) return;
@@ -89,10 +122,15 @@ namespace Core
             try
             {
                 await Client.PostProducts(ProductsUpdateToApi);
+                foreach (DbProduct p in DbEntitiesErp)
+                {
+                    DbClient.SetFlagsForProductById(p.Id, 'C', 'C');
+                }
             }
             catch (Exception ex)
             {
                 ErrorLog.LogError("Failed during sending update product to API.", ex);
+                throw;
             }
         }
 
@@ -103,12 +141,82 @@ namespace Core
             try
             {
                 await Client.DeleteProducts(ProductsDeleteToApi);
+                foreach (DbProduct p in DbEntitiesDel)
+                {
+                    DbClient.SetFlagsForProductById(p.Id, (char)p.ErpChanged, 'D');
+                }
             }
             catch (Exception ex)
             {
                 ErrorLog.LogError("Failed during sending delete product to API.", ex);
+                throw;
             }
         }
+        #endregion
+
+        #region Sync Step 2 methodes
+        public void GetProductsFromApi()
+        {
+            try
+            {
+                AllApiProducts = Client.GetProducts();
+            }
+            catch (Exception e)
+            {
+                ErrorLog.LogError("Failed to get Products from API.", e);
+                throw;
+            }
+            //TODO: to be removed
+            Console.WriteLine($"Found {AllApiProducts.Count} products from API.");
+        }
+
+        public void GetAllDataFromDb()
+        {
+            AllDbEntities = DbClient.GetAllProducts();
+        }
+
+        public void CompareApiWithDb()
+        {
+            AllApiProductsMapped = ProductMapper.ToEntity(AllApiProducts);
+
+            ProductToUpdateInDb = AllApiProductsMapped
+                .Where(api =>
+                {
+                    var db = AllDbEntities.FirstOrDefault(d => d.ProductId == api.ProductId && d.Shop.Url == api.Shop.Url);
+                    return db == null || CompareProducts(db, api);
+                })
+                .ToList();
+
+            ProductToDeleteInDb = AllDbEntities
+                .Where(db =>
+                    !AllApiProductsMapped.Any(api =>
+                        api.ProductId == db.ProductId &&
+                        api.Shop.Url == db.Shop.Url))
+                .ToList();
+        }
+
+        private bool CompareProducts(DbProduct db, DbProduct api)
+        {
+            return db.ProductId != api.ProductId ||
+                   db.Type != api.Type ||
+                   db.Shop.Url != api.Shop.Url ||
+                   db.Attributes.Created != api.Attributes.Created ||
+                   db.Attributes.LastModified != api.Attributes.LastModified ||
+                   db.Attributes.Price.GetHashCode() != api.Attributes.Price.GetHashCode() ||
+                   db.Attributes.LiveFrom != api.Attributes.LiveFrom ||
+                   db.Attributes.LiveUntil != api.Attributes.LiveUntil ||
+                   db.Attributes.Locale.First().Name != api.Attributes.Locale.First().Name ||
+                   db.Attributes.Locale.First().Language != api.Attributes.Locale.First().Language;
+        }
+
+        public void SendProductsToDb()
+        {
+            ProductToUpdateInDb.ForEach(p => p.ShopChanged = 'U');
+            ProductToDeleteInDb.ForEach(p => p.ShopChanged = 'D');
+            DbClient.InsertOrUpdateProducts(ProductToUpdateInDb);
+            DbClient.InsertOrUpdateProducts(ProductToDeleteInDb);
+        }
+        #endregion
     }
 
 }
