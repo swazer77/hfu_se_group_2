@@ -23,17 +23,11 @@ public class DbClient
     {
         using Context dbContext = new();
         List<DbProduct> products = dbContext.Product
-            .Where(p => p.ShopChanged != 'D' && p.ErpChanged != 'D')
             .Include(nameof(Context.Attributes))
             .Include(nameof(Context.Shop))
+            .Where(p => p.ShopChanged != 'D' && p.ErpChanged != 'D')
             .ToList();
-        foreach (DbProduct product in products)
-        {
-            List<DbLocale> locales = dbContext.Locale
-                .Where(l => l.DbAttributesId == product.Attributes.Id)
-                .ToList();
-            product.Attributes.Locale = locales;
-        }
+        AddLocaleToProducts(products);
         return products;
     }
 
@@ -43,14 +37,9 @@ public class DbClient
         List<DbProduct> products = dbContext.Product
             .Include(nameof(Context.Attributes))
             .Include(nameof(Context.Shop))
-            .Where(p => p.ErpChanged != 'U' && p.ShopChanged != 'C').ToList();
-        foreach (DbProduct product in products)
-        {
-            List<DbLocale> locales = dbContext.Locale
-                .Where(l => l.DbAttributesId == product.Attributes.Id)
-                .ToList();
-            product.Attributes.Locale = locales;
-        }
+            .Where(p => p.ErpChanged != 'U' && p.ShopChanged != 'C')
+            .ToList();
+        AddLocaleToProducts(products);
         return products;
     }
 
@@ -110,6 +99,17 @@ public class DbClient
         dbContext.SaveChanges();
     }
 
+    private static void AddLocaleToProducts(List<DbProduct> products)
+    {
+        using Context dbContext = new();
+        foreach (DbProduct product in products)
+        {
+            List<DbLocale> locales = dbContext.Locale
+                .Where(l => l.DbAttributesId == product.Attributes.Id)
+                .ToList();
+            product.Attributes.Locale = locales;
+        }
+    }
 
     // ############################################################################################
     // Helper methods
