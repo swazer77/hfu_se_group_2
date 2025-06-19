@@ -1,5 +1,4 @@
-﻿using System.Runtime.InteropServices.JavaScript;
-using Core.io;
+﻿using Core.io;
 using Core.mapper;
 using Core.testdata;
 using DbAccess;
@@ -60,6 +59,7 @@ namespace Core
             }
             #endregion
 
+            #region Step 2
             //// Step 2
             //// 
             ////
@@ -79,6 +79,7 @@ namespace Core
                 ErrorLog.LogError("Something went wrong while sync the data from the API to the Db.", e);
                 
             }
+            #endregion
 
             ErrorLog.LogError("End Synchronisation");
             foreach (string log in ErrorLog.GetErrors())

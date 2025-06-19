@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Reflection.Metadata.Ecma335;
+﻿using System.Globalization;
 using DBModel;
 using HttpModel;
 
@@ -25,10 +24,10 @@ namespace Core.mapper
                             Name = entity.Attributes.Locale.First().Name,
                         }],
                         Price = entity.Attributes.Price,
-                        Created = entity.Attributes.Created.ToString(),
-                        LastModified = entity.Attributes.LastModified.ToString(),
-                        LiveFrom = entity.Attributes.LiveFrom.ToString(),
-                        LiveUntil = entity.Attributes.LiveUntil.ToString(),
+                        Created = entity.Attributes.Created?.ToString("o"),
+                        LastModified = entity.Attributes.LastModified?.ToString("o"),
+                        LiveFrom = entity.Attributes.LiveFrom.ToString("o"),
+                        LiveUntil = entity.Attributes.LiveUntil.ToString("o"), 
                     },
                     Shop = new Shop
                     {
@@ -56,10 +55,10 @@ namespace Core.mapper
                             Name = product.Attributes.Locale.First().Name,
                             Language = product.Attributes.Locale.First().Language,
                         }],
-                        Created = DateTime.Parse(product.Attributes.Created),
-                        LastModified = DateTime.Parse(product.Attributes.LastModified),
-                        LiveFrom = DateTime.Parse(product.Attributes.LiveFrom),
-                        LiveUntil = DateTime.Parse(product.Attributes.LiveUntil),
+                        Created = DateTime.ParseExact(product.Attributes.Created, "o", CultureInfo.InvariantCulture),
+                        LastModified = DateTime.ParseExact(product.Attributes.LastModified, "o", CultureInfo.InvariantCulture),
+                        LiveFrom = DateTime.ParseExact(product.Attributes.LiveFrom, "o", CultureInfo.InvariantCulture),
+                        LiveUntil = DateTime.ParseExact(product.Attributes.LiveUntil, "o", CultureInfo.InvariantCulture),
                         Price = product.Attributes.Price,
                     }
                 });

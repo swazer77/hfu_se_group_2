@@ -1,11 +1,4 @@
-﻿using Core.io;
-using Core.testdata;
-using DbAccess;
-using DBModel;
-using HttpAccess;
-using HttpModel;
-
-namespace Core
+﻿namespace Core
 {
     public class Program
     {
