@@ -55,15 +55,43 @@ namespace Core.mapper
                             Name = product.Attributes.Locale.First().Name,
                             Language = product.Attributes.Locale.First().Language,
                         }],
-                        Created = DateTime.ParseExact(product.Attributes.Created, "o", CultureInfo.InvariantCulture),
-                        LastModified = DateTime.ParseExact(product.Attributes.LastModified, "o", CultureInfo.InvariantCulture),
-                        LiveFrom = DateTime.ParseExact(product.Attributes.LiveFrom, "o", CultureInfo.InvariantCulture),
-                        LiveUntil = DateTime.ParseExact(product.Attributes.LiveUntil, "o", CultureInfo.InvariantCulture),
+                        Created = ParseStringToDateTime(product.Attributes.Created),
+                        LastModified = ParseStringToDateTime(product.Attributes.LastModified),
+                        LiveFrom = ParseStringToDateTime(product.Attributes.LiveFrom),
+                        LiveUntil = ParseStringToDateTime(product.Attributes.LiveUntil),
                         Price = product.Attributes.Price,
+                    },
+                    Shop = new DbShop
+                    {
+                        Url = product.Shop.Url,
                     }
+                    
                 });
             }
             return entities;
+        }
+
+        private static DateTime ParseStringToDateTime(string s)
+        {
+            DateTime parsedDateTime = new DateTime();
+            bool result;
+            
+            result = DateTime.TryParseExact(
+                    s,
+                    "o",
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.RoundtripKind,
+                    out parsedDateTime
+                );
+
+            if (result)
+            {
+                return parsedDateTime;
+            }
+
+            return new DateTime();
+
+            //ParseStringToDateTime("1900-01-01 00:00:00");
         }
 
     }

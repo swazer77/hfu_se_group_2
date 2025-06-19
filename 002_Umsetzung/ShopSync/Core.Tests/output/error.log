@@ -1,3 +1,5 @@
+[2025-06-19 14:27:08] ERROR: this is a test run
+Exception: Index out of bounds
 [2025-06-18 15:35:43] ERROR: Test message from GetErrors test
 Exception: Test exception for GetErrors
 [2025-06-18 15:35:37] ERROR: this is a test run

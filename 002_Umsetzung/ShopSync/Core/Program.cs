@@ -1,10 +1,16 @@
-﻿namespace Core
+﻿using DbAccess;
+using HttpAccess;
+
+namespace Core
 {
     public class Program
     {
         public static void Main(string[] args)
         {
-            SyncService syncService = new SyncService();
+            var db = new DbClient();
+            var api = new Client();
+
+            SyncService syncService = new SyncService(db, api);
             syncService.Run();
         }
     }

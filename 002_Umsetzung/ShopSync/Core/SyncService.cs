@@ -30,8 +30,14 @@ namespace Core
         private readonly TestApiProducts testApi = new TestApiProducts();
         #endregion
 
-        public readonly DbClient DbClient = new DbClient();
-        public readonly Client Client = new Client();
+        private readonly DbClient dbClient;
+        private readonly Client client;
+
+        public SyncService(DbClient dbClient, Client client)
+        {
+            this.dbClient = dbClient;
+            this.client = client;
+        }
 
         public void Run()
         {
@@ -103,9 +109,9 @@ namespace Core
         }
 
         #region Sync Step 1 methodes
-        public void GetProductsFromDbWithErpChanged()
+        private void GetProductsFromDbWithErpChanged()
         {
-            List<DbProduct> dbProducts = DbClient.GetAllProductsErpChanged();
+            List<DbProduct> dbProducts = dbClient.GetAllProductsErpChanged();
 
             DbEntitiesDel = dbProducts.Where(p =>
                 p.ErpChanged.ToString().Equals("D", StringComparison.OrdinalIgnoreCase)).ToList();
@@ -116,16 +122,16 @@ namespace Core
             ProductsUpdateToApi = ProductMapper.ToModel(DbEntitiesErp);
         }
 
-        public async Task SendProductsUpdateToApi()
+        private async Task SendProductsUpdateToApi()
         {
             if (ProductsUpdateToApi == null || ProductsUpdateToApi.Count == 0) return;
 
             try
             {
-                await Client.PostProducts(ProductsUpdateToApi);
+                await client.PostProducts(ProductsUpdateToApi);
                 foreach (DbProduct p in DbEntitiesErp)
                 {
-                    DbClient.SetFlagsForProductById(p.Id, 'C', 'C');
+                    dbClient.SetFlagsForProductById(p.Id, 'C', 'C');
                 }
             }
             catch (Exception ex)
@@ -135,16 +141,16 @@ namespace Core
             }
         }
 
-        public async Task SendProductsDeleteToApi()
+        private async Task SendProductsDeleteToApi()
         {
             if (ProductsDeleteToApi == null || ProductsDeleteToApi.Count == 0) return;
 
             try
             {
-                await Client.DeleteProducts(ProductsDeleteToApi);
+                await client.DeleteProducts(ProductsDeleteToApi);
                 foreach (DbProduct p in DbEntitiesDel)
                 {
-                    DbClient.SetFlagsForProductById(p.Id, (char)p.ErpChanged, 'D');
+                    dbClient.SetFlagsForProductById(p.Id, (char)p.ErpChanged, 'D');
                 }
             }
             catch (Exception ex)
@@ -156,11 +162,11 @@ namespace Core
         #endregion
 
         #region Sync Step 2 methodes
-        public void GetProductsFromApi()
+        private void GetProductsFromApi()
         {
             try
             {
-                AllApiProducts = Client.GetProducts();
+                AllApiProducts = client.GetProducts();
             }
             catch (Exception e)
             {
@@ -171,13 +177,15 @@ namespace Core
             Console.WriteLine($"Found {AllApiProducts.Count} products from API.");
         }
 
-        public void GetAllDataFromDb()
+        private void GetAllDataFromDb()
         {
-            AllDbEntities = DbClient.GetAllProducts();
+            AllDbEntities = dbClient.GetAllProducts();
         }
 
-        public void CompareApiWithDb()
+        private void CompareApiWithDb()
         {
+            if (AllApiProducts == null || AllApiProducts.Count == 0) return;
+
             AllApiProductsMapped = ProductMapper.ToEntity(AllApiProducts);
 
             ProductToUpdateInDb = AllApiProductsMapped
@@ -210,12 +218,19 @@ namespace Core
                    db.Attributes.Locale.First().Language != api.Attributes.Locale.First().Language;
         }
 
-        public void SendProductsToDb()
+        private void SendProductsToDb()
         {
-            ProductToUpdateInDb.ForEach(p => p.ShopChanged = 'U');
-            ProductToDeleteInDb.ForEach(p => p.ShopChanged = 'D');
-            DbClient.InsertOrUpdateProducts(ProductToUpdateInDb);
-            DbClient.InsertOrUpdateProducts(ProductToDeleteInDb);
+            if (ProductToUpdateInDb != null && ProductToUpdateInDb.Count != 0)
+            {
+                ProductToUpdateInDb.ForEach(p => p.ShopChanged = 'U');
+                dbClient.InsertOrUpdateProducts(ProductToUpdateInDb);
+            }
+
+            if (ProductToDeleteInDb != null && ProductToDeleteInDb.Count != 0)
+            {
+                ProductToDeleteInDb.ForEach(p => p.ShopChanged = 'D');
+                dbClient.InsertOrUpdateProducts(ProductToDeleteInDb);
+            }
         }
         #endregion
     }
