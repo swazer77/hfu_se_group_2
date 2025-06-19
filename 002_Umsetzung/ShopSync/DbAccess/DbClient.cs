@@ -34,7 +34,7 @@ public class DbClient
         return dbContext.Product
             .Include(nameof(Context.Attributes))
             .Include(nameof(Context.Shop))
-            .Where(p => p.ErpChanged != 'U' && p.ShopChanged != 'C' || p.ErpChanged != 'D' && p.ShopChanged != 'D').ToList();
+            .Where(p => p.ErpChanged != 'U' && p.ShopChanged != 'C').ToList();
     }
 
     public void InsertOrUpdateProducts(List<DbProduct> products)
