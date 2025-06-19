@@ -12,6 +12,12 @@ public class DbClient
         dbContext.Database.EnsureCreated();
     }
 
+    // ############################################################################################
+    // Public methods
+    // ############################################################################################
+
+    // Product ####################################################################################
+
     public List<DbProduct> GetAllProducts()
     {
         using Context dbContext = new();
@@ -28,7 +34,7 @@ public class DbClient
         return dbContext.Product
             .Include(nameof(Context.Attributes))
             .Include(nameof(Context.Shop))
-            .Where(p => p.ShopChanged != 'D' && p.ErpChanged != 'D' && p.ErpChanged != null).ToList();
+            .Where(p => p.ErpChanged != 'U' && p.ShopChanged != 'C').ToList();
     }
 
     public void InsertOrUpdateProducts(List<DbProduct> products)
@@ -37,9 +43,39 @@ public class DbClient
         {
             InsertOrUpdateProduct(product);
         }
+        CleanupDb();
+    }
+        
+    public void SetFlagsForProductById(int id, char erpChanged, char shopChanged)
+    {
+        using Context dbContext = new();
+        DbProduct? product = dbContext.Product.FirstOrDefault(p => p.Id == id);
+        if (product == null)
+        {
+            throw new ArgumentException($"Product with ID {id} not found.", nameof(id));
+        }
+        product.ErpChanged = erpChanged;
+        product.ShopChanged = shopChanged;
+        dbContext.SaveChanges();
     }
 
-    private void InsertOrUpdateProduct(DbProduct product)
+    // ############################################################################################
+    // Private methods
+    // ############################################################################################
+
+    // Product ####################################################################################
+
+    private static void CleanupDb()
+    {
+        // Remove products that are marked as deleted in both ShopChanged and ErpChanged
+        using Context dbContext = new();
+        dbContext.Product.RemoveRange(dbContext.Product.Where(p => p.ShopChanged == 'D' && p.ErpChanged == 'D'));
+        dbContext.SaveChanges();
+    }
+
+    // delete: nur 
+
+    private static void InsertOrUpdateProduct(DbProduct product)
     {
         if (product == null)
         {

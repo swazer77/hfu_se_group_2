@@ -46,7 +46,7 @@ public sealed class DbClientTests
                     LiveFrom = DateTime.Now,
                     LiveUntil = DateTime.Now
                 },
-                ErpChanged = null,
+                ErpChanged = 'U',
                 ShopChanged = 'C',
                 Shop = new DbShop
                 {
@@ -144,7 +144,7 @@ public sealed class DbClientTests
         ];
 
         DbClient dbClient = new DbClient();
-        Context dbContext = new Context();
+        using Context dbContext = new Context();
         // Ensure the database is created and cleared for testing
         dbClient.InsertOrUpdateProducts(initialProducts);
         DbProduct dbProduct = dbContext.Product.Include("Attributes").First(p => p.ProductId == "TestProduct4");
@@ -162,6 +162,15 @@ public sealed class DbClientTests
         DbClient dbClient = new DbClient();
         List<DbProduct> products = dbClient.GetAllProducts();
         Assert.IsNotNull(products);
-        //Assert.IsTrue(products.Count > 0, "Expected at least one product in the database.");
+        Assert.IsTrue(products.Count > 0, "Expected at least one product in the database.");
+    }
+
+    [TestMethod]
+    public void TestGetAllProductsErpChanged()
+    {
+        DbClient dbClient = new DbClient();
+        List<DbProduct> products = dbClient.GetAllProductsErpChanged();
+        Assert.IsNotNull(products);
+        Assert.IsTrue(products.Count > 0, "Expected at least one product in the database.");
     }
 }
