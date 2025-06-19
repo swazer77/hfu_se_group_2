@@ -10,7 +10,7 @@ namespace Core.mapper
         {
             List<Product> products = new List<Product>();
 
-            foreach (var entity in entities)
+            foreach (DbProduct entity in entities)
             {
                 products.Add(new Product
                 {
@@ -38,11 +38,11 @@ namespace Core.mapper
             return products;
         }
 
-        public static List<DbProduct> ToEntity(List<Product>? products)
+        public static List<DbProduct> ToEntity(List<Product> products)
         {
             List<DbProduct> entities = new List<DbProduct>();
 
-            foreach (var product in products)
+            foreach (Product product in products)
             {
                 entities.Add(new DbProduct
                 {
