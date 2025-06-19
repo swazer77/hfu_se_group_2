@@ -22,20 +22,36 @@ public class DbClient
     public List<DbProduct> GetAllProducts()
     {
         using Context dbContext = new();
-        return dbContext.Product
+        List<DbProduct> products = dbContext.Product
             .Where(p => p.ShopChanged != 'D' && p.ErpChanged != 'D')
             .Include(nameof(Context.Attributes))
             .Include(nameof(Context.Shop))
             .ToList();
+        foreach (DbProduct product in products)
+        {
+            List<DbLocale> locales = dbContext.Locale
+                .Where(l => l.DbAttributesId == product.Attributes.Id)
+                .ToList();
+            product.Attributes.Locale = locales;
+        }
+        return products;
     }
 
     public List<DbProduct> GetAllProductsErpChanged()
     {
         using Context dbContext = new();
-        return dbContext.Product
+        List<DbProduct> products = dbContext.Product
             .Include(nameof(Context.Attributes))
             .Include(nameof(Context.Shop))
             .Where(p => p.ErpChanged != 'U' && p.ShopChanged != 'C').ToList();
+        foreach (DbProduct product in products)
+        {
+            List<DbLocale> locales = dbContext.Locale
+                .Where(l => l.DbAttributesId == product.Attributes.Id)
+                .ToList();
+            product.Attributes.Locale = locales;
+        }
+        return products;
     }
 
     public void InsertOrUpdateProducts(List<DbProduct> products)

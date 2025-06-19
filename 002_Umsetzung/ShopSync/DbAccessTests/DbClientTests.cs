@@ -163,6 +163,8 @@ public sealed class DbClientTests
         List<DbProduct> products = dbClient.GetAllProducts();
         Assert.IsNotNull(products);
         Assert.IsTrue(products.Count > 0, "Expected at least one product in the database.");
+        Assert.IsNotNull(products.First().Attributes, "Attributes is null.");
+        Assert.IsNotNull(products.First().Attributes.Locale, "Locale is null");
     }
 
     [TestMethod]
