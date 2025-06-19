@@ -1,4 +1,5 @@
-﻿using DbAccess;
+﻿using System.Diagnostics;
+using DbAccess;
 using DBModel;
 using Microsoft.EntityFrameworkCore;
 
@@ -164,7 +165,9 @@ public sealed class DbClientTests
         Assert.IsNotNull(products);
         Assert.IsTrue(products.Count > 0, "Expected at least one product in the database.");
         Assert.IsNotNull(products.First().Attributes, "Attributes is null.");
-        Assert.IsNotNull(products.First().Attributes.Locale, "Locale is null");
+        Assert.AreEqual(products.First().Attributes.Id, products.First().Attributes.Locale[0].DbAttributesId, "Locale FK not matching Attribute Id");
+        string json = System.Text.Json.JsonSerializer.Serialize(products.Last(), new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+        Debug.WriteLine(json);
     }
 
     [TestMethod]
