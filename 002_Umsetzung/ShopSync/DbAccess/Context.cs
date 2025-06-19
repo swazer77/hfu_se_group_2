@@ -1,11 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using DBModel;
+using Microsoft.EntityFrameworkCore;
+using System.Reflection.Metadata;
 namespace DbAccess;
 
 public class Context : DbContext
 {
     public DbSet<DBModel.DbProduct> Product { get; set; }
-    //public DbSet<DBModel.DbLocale> Locale { get; set; }
-    //public DbSet<DBModel.DbAttributes> Attributes { get; set; }
+    public DbSet<DBModel.DbLocale> Locale { get; set; }
+    public DbSet<DBModel.DbAttributes> Attributes { get; set; }
     public DbSet<DBModel.DbShop> Shop { get; set; }
 
     // ToDo: Configuration via appsettings.json or similar
@@ -20,5 +22,24 @@ public class Context : DbContext
             builder => builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null)
         );
         base.OnConfiguring(optionsBuilder);
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        // Product -> Attributes (one-to-one, cascade delete)
+        modelBuilder.Entity<DbProduct>()
+            .HasOne(p => p.Attributes)
+            .WithOne()
+            .HasForeignKey<DbProduct>(p => p.Id)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Attributes -> Locale (one-to-many, cascade delete)
+        modelBuilder.Entity<DbAttributes>()
+            .HasMany(a => a.Locale)
+            .WithOne()
+            .HasForeignKey("DbAttributesId")
+            .OnDelete(DeleteBehavior.Cascade);
+
+        base.OnModelCreating(modelBuilder);
     }
 }

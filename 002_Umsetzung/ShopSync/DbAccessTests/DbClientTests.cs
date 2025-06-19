@@ -1,5 +1,6 @@
 ﻿using DbAccess;
 using DBModel;
+using Microsoft.EntityFrameworkCore;
 
 namespace DbAccessTests;
 
@@ -9,13 +10,13 @@ public sealed class DbClientTests
     [TestMethod]
     public void TestInsertProducts()
     {
-        List<DbProduct> products = new()
-        {
+        List<DbProduct> products =
+        [
             new DbProduct
             {
                 ProductId = "TestProduct1",
                 Type = "TestType",
-                Attributes = new()
+                Attributes = new DbAttributes
                 {
                     Locale = [new DbLocale { Language = "de", Name = "Test Product 1" }],
                     Price = 19.90,
@@ -31,11 +32,12 @@ public sealed class DbClientTests
                     Url = "https://test.webstores.ch/boreas/shop/api/v2"
                 }
             },
+
             new DbProduct
             {
                 ProductId = "TestProduct2",
                 Type = "TestType",
-                Attributes = new()
+                Attributes = new DbAttributes
                 {
                     Locale = [new DbLocale { Language = "de", Name = "Test Product 2" }],
                     Price = 29.90,
@@ -51,13 +53,14 @@ public sealed class DbClientTests
                     Url = "https://test.webstores.ch/boreas/shop/api/v2"
                 }
             },
+
             new DbProduct
             {
                 ProductId = "TestProduct3",
                 Type = "TestType",
-                Attributes = new()
+                Attributes = new DbAttributes
                 {
-                    Locale = [new DbLocale { Language = "de", Name = "Test Product 2" }],
+                    Locale = [new DbLocale { Language = "de", Name = "Test Product 3" }],
                     Price = 99.90,
                     Created = DateTime.Now,
                     LastModified = DateTime.Now,
@@ -71,7 +74,7 @@ public sealed class DbClientTests
                     Url = "https://test.webstores2.ch/boreas/shop/api/v2"
                 }
             }
-        };
+        ];
 
         DbClient dbClient = new DbClient();
         Context dbContext = new Context();
@@ -87,6 +90,70 @@ public sealed class DbClientTests
         Assert.IsTrue(dbProducts.Any(p => p.ProductId == "TestProduct1"), "Inserted product should be in the database.");
         Assert.IsTrue(dbProducts.Any(p => p.ProductId == "TestProduct2"), "Inserted product should be in the database.");
         Assert.IsTrue(dbProducts.Any(p => p.ProductId == "TestProduct3"), "Inserted product should be in the database.");
+    }
+
+    [TestMethod]
+    public void TestChangeProducts()
+    {
+        List<DbProduct> initialProducts =
+        [
+            new DbProduct
+            {
+                ProductId = "TestProduct4",
+                Type = "TestType",
+                Attributes = new DbAttributes
+                {
+                    Locale = [new DbLocale { Language = "de", Name = "Test Product 4" }],
+                    Price = 19.90,
+                    Created = DateTime.Now,
+                    LastModified = DateTime.Now,
+                    LiveFrom = DateTime.Now,
+                    LiveUntil = DateTime.Now
+                },
+                ErpChanged = 'U',
+                ShopChanged = null,
+                Shop = new DbShop
+                {
+                    Url = "https://test.webstores.ch/boreas/shop/api/v2"
+                }
+            }
+        ];
+
+        List<DbProduct> changedProducts =
+        [
+            new DbProduct
+            {
+                ProductId = "TestProduct4",
+                Type = "TestType",
+                Attributes = new DbAttributes
+                {
+                    Locale = [new DbLocale { Language = "de", Name = "Test Product 4" }],
+                    Price = 99.90,
+                    Created = DateTime.Now,
+                    LastModified = DateTime.Now,
+                    LiveFrom = DateTime.Now,
+                    LiveUntil = DateTime.Now
+                },
+                ErpChanged = 'U',
+                ShopChanged = 'C',
+                Shop = new DbShop
+                {
+                    Url = "https://test.webstores.ch/boreas/shop/api/v2"
+                }
+            }
+        ];
+
+        DbClient dbClient = new DbClient();
+        Context dbContext = new Context();
+        // Ensure the database is created and cleared for testing
+        dbClient.InsertOrUpdateProducts(initialProducts);
+        DbProduct dbProduct = dbContext.Product.Include("Attributes").First(p => p.ProductId == "TestProduct4");
+        Assert.AreEqual(19.90, dbProduct.Attributes.Price, "Initial insert failed.");
+        Assert.AreEqual(dbProduct.ShopChanged, null, "Initial insert failed.");
+        dbClient.InsertOrUpdateProducts(changedProducts);
+        dbProduct = dbContext.Product.Include("Attributes").First(p => p.ProductId == "TestProduct4");
+        Assert.AreEqual(99.90, dbProduct.Attributes.Price, "Price should have been updated.");
+        Assert.AreEqual('C', dbProduct.ShopChanged, "ShopChanged should have been modified.");
     }
 
     [TestMethod]
