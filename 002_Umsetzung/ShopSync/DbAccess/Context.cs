@@ -1,14 +1,13 @@
 ﻿using DBModel;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Metadata;
 namespace DbAccess;
 
 public class Context : DbContext
 {
-    public DbSet<DBModel.DbProduct> Product { get; set; }
-    public DbSet<DBModel.DbLocale> Locale { get; set; }
-    public DbSet<DBModel.DbAttributes> Attributes { get; set; }
-    public DbSet<DBModel.DbShop> Shop { get; set; }
+    public DbSet<DbProduct> Product { get; set; }
+    public DbSet<DbLocale> Locale { get; set; }
+    public DbSet<DbAttributes> Attributes { get; set; }
+    public DbSet<DbShop> Shop { get; set; }
 
     // ToDo: Configuration via appsettings.json or similar
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
