@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Reflection.Metadata.Ecma335;
+using DBModel;
+using HttpModel;
 
 namespace Core.mapper
 {
     public static class ProductMapper
     {
-        /*
-        public static List<Product> ToModel(List<ProductEntity> entities)
+        public static List<Product> ToModel(List<DbProduct> entities)
         {
             List<Product> products = new List<Product>();
 
@@ -13,45 +15,57 @@ namespace Core.mapper
             {
                 products.Add(new Product
                 {
-                    Id = entity.Id,
+                    Id = entity.ProductId,
                     Type = entity.Type,
                     Attributes = new Attributes
                     {
                         Locale = [new Locale
                         {
-                            Language = entity.Attribute.Locale.Language,
-                            Name = entity.Attribute.Locale.Name
+                            Language = entity.Attributes.Locale.First().Language,
+                            Name = entity.Attributes.Locale.First().Name,
                         }],
-                        Price = entity.Attribute.Price,
-                        Created = entity.Attribute.Created,
-                        LastModified = entity.Attribute.Modified,
-                        LiveFrom = entity.Attribute.LiveFrom,
-                        LiveUntil = entity.Attribute.LiveUntil
+                        Price = entity.Attributes.Price,
+                        Created = entity.Attributes.Created.ToString(),
+                        LastModified = entity.Attributes.LastModified.ToString(),
+                        LiveFrom = entity.Attributes.LiveFrom.ToString(),
+                        LiveUntil = entity.Attributes.LiveUntil.ToString(),
                     },
                     Shop = new Shop
                     {
-                        Url = entity.Attribute.Shop.Url
+                        Url = entity.Shop.Url,
                     }
                 });
             }
             return products;
         }
 
-        public static List<ProductEntity> ToEntity(List<Product> products)
+        public static List<DbProduct> ToEntity(List<Product> products)
         {
-            List<ProductEntity> entities = new List<ProductEntity>();
+            List<DbProduct> entities = new List<DbProduct>();
 
             foreach (var product in products)
             {
-                entities.Add(new ProductEntity
+                entities.Add(new DbProduct
                 {
-
+                    ProductId = product.Id,
+                    Type = product.Type,
+                    Attributes = new DbAttributes
+                    {
+                        Locale = [new DbLocale
+                        {
+                            Name = product.Attributes.Locale.First().Name,
+                            Language = product.Attributes.Locale.First().Language,
+                        }],
+                        Created = DateTime.Parse(product.Attributes.Created),
+                        LastModified = DateTime.Parse(product.Attributes.LastModified),
+                        LiveFrom = DateTime.Parse(product.Attributes.LiveFrom),
+                        LiveUntil = DateTime.Parse(product.Attributes.LiveUntil),
+                        Price = product.Attributes.Price,
+                    }
                 });
             }
+            return entities;
         }
-
-
-        */
 
     }
 }
