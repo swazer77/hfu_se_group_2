@@ -173,4 +173,47 @@ public sealed class DbClientTests
         Assert.IsNotNull(products);
         Assert.IsTrue(products.Count > 0, "Expected at least one product in the database.");
     }
+
+    [TestMethod]
+    public void TestSetFlagsForProductById()
+    {
+        List<DbProduct> products =
+        [
+            new DbProduct
+            {
+                ProductId = "TestProduct5",
+                Type = "TestType",
+                Attributes = new DbAttributes
+                {
+                    Locale = [new DbLocale { Language = "de", Name = "Test Product 5" }],
+                    Price = 99.90,
+                    Created = DateTime.Now,
+                    LastModified = DateTime.Now,
+                    LiveFrom = DateTime.Now,
+                    LiveUntil = DateTime.Now
+                },
+                ErpChanged = 'U',
+                ShopChanged = 'U',
+                Shop = new DbShop
+                {
+                    Url = "https://test.webstores.ch/boreas/shop/api/v2"
+                }
+            }
+        ];
+
+        DbClient dbClient = new DbClient();
+        dbClient.InsertOrUpdateProducts(products);
+        DbProduct dbProduct;
+        using (Context dbContext = new Context())
+        {
+            dbProduct = dbContext.Product.Include("Attributes").First(p => p.ProductId == "TestProduct5");
+        }
+        dbClient.SetFlagsForProductById(dbProduct.Id, 'C', 'C');
+        using (Context dbContext = new Context())
+        {
+            dbProduct = dbContext.Product.Include("Attributes").First(p => p.ProductId == "TestProduct5");
+        }
+        Assert.AreEqual('C', dbProduct.ErpChanged, "Flag should have been updated");
+        Assert.AreEqual('C', dbProduct.ShopChanged, "Flag should have been updated");
+    }
 }

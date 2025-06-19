@@ -12,6 +12,7 @@ public class DbClient
         dbContext.Database.EnsureCreated();
     }
 
+
     // ############################################################################################
     // Public methods
     // ############################################################################################
@@ -45,7 +46,7 @@ public class DbClient
         }
         CleanupDb();
     }
-        
+
     public void SetFlagsForProductById(int id, char erpChanged, char shopChanged)
     {
         using Context dbContext = new();
@@ -59,21 +60,12 @@ public class DbClient
         dbContext.SaveChanges();
     }
 
+
     // ############################################################################################
     // Private methods
     // ############################################################################################
 
     // Product ####################################################################################
-
-    private static void CleanupDb()
-    {
-        // Remove products that are marked as deleted in both ShopChanged and ErpChanged
-        using Context dbContext = new();
-        dbContext.Product.RemoveRange(dbContext.Product.Where(p => p.ShopChanged == 'D' && p.ErpChanged == 'D'));
-        dbContext.SaveChanges();
-    }
-
-    // delete: nur 
 
     private static void InsertOrUpdateProduct(DbProduct product)
     {
@@ -99,6 +91,19 @@ public class DbClient
         }
 
         dbContext.Product.Add(product);
+        dbContext.SaveChanges();
+    }
+
+
+    // ############################################################################################
+    // Helper methods
+    // ############################################################################################
+
+    private static void CleanupDb()
+    {
+        // Remove products that are marked as deleted in both ShopChanged and ErpChanged
+        using Context dbContext = new();
+        dbContext.Product.RemoveRange(dbContext.Product.Where(p => p.ShopChanged == 'D' && p.ErpChanged == 'D'));
         dbContext.SaveChanges();
     }
 }
