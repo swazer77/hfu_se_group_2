@@ -3,7 +3,7 @@
 namespace Core.Tests
 {
     [TestClass]
-    public sealed class ErrorLogTests
+    public sealed class LoggerTests
     {
 
 
