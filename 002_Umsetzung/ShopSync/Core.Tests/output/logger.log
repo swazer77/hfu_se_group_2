@@ -1,0 +1,4 @@
+[2025-06-20 09:53:40] ERROR: Test message from GetLogs test
+Exception: Test exception for GetLogs
+[2025-06-20 09:53:40] ERROR: this is a test run
+Exception: Index out of bounds

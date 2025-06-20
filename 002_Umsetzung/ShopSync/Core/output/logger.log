@@ -1,0 +1,44 @@
+------------------------------------------------------------
+[2025-06-20 09:44:41] INFO: End Synchronisation
+[2025-06-20 09:44:41] ERROR: Something went wrong while sync the data from the API to the Db.
+Exception: This method is not implemented yet. Please use GetProductsAsync instead.
+[2025-06-20 09:44:41] ERROR: Failed to get Products from API.
+Exception: This method is not implemented yet. Please use GetProductsAsync instead.
+[2025-06-20 09:44:41] INFO: Get all products from HttpAccess
+[2025-06-20 09:44:41] INFO: Start Sync DB to API
+[2025-06-20 09:44:41] INFO: End Sync DB to API
+[2025-06-20 09:44:41] INFO: Send deletion to API
+[2025-06-20 09:44:41] INFO: Send update to API
+[2025-06-20 09:44:40] INFO: Get data from DB
+[2025-06-20 09:44:40] INFO: Start Sync DB to API
+[2025-06-20 09:44:40] INFO: Start Synchronisation...
+------------------------------------------------------------
+[2025-06-20 09:38:46] INFO: End Synchronisation
+[2025-06-20 09:38:46] INFO: End Sync DB to API
+[2025-06-20 09:38:46] INFO: Send update to DB
+[2025-06-20 09:38:46] INFO: Compare DB with API
+[2025-06-20 09:38:45] INFO: Get all products from Db
+[2025-06-20 09:38:45] INFO: Found 9 products from API.
+[2025-06-20 09:38:45] INFO: Get all products from HttpAccess
+[2025-06-20 09:38:45] INFO: Start Sync DB to API
+[2025-06-20 09:38:45] INFO: End Sync DB to API
+[2025-06-20 09:38:45] INFO: Send deletion to API
+[2025-06-20 09:38:45] INFO: Send update to API
+[2025-06-20 09:38:45] INFO: Get data from DB
+[2025-06-20 09:38:45] INFO: Start Sync DB to API
+[2025-06-20 09:38:45] INFO: Start Synchronisation...
+------------------------------------------------------------
+[2025-06-20 09:38:29] INFO: End Synchronisation
+[2025-06-20 09:38:29] INFO: End Sync DB to API
+[2025-06-20 09:38:29] INFO: Send update to DB
+[2025-06-20 09:38:29] INFO: Compare DB with API
+[2025-06-20 09:38:29] INFO: Get all products from Db
+[2025-06-20 09:38:29] INFO: Found 9 products from API.
+[2025-06-20 09:38:28] INFO: Get all products from HttpAccess
+[2025-06-20 09:38:28] INFO: Start Sync DB to API
+[2025-06-20 09:38:28] INFO: End Sync DB to API
+[2025-06-20 09:38:28] INFO: Send deletion to API
+[2025-06-20 09:38:28] INFO: Send update to API
+[2025-06-20 09:38:28] INFO: Get data from DB
+[2025-06-20 09:38:28] INFO: Start Sync DB to API
+[2025-06-20 09:38:28] INFO: Start Synchronisation...

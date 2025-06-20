@@ -91,7 +91,7 @@ StyleCopReport.xml
 *_wpftmp.csproj
 *.log
 # But do NOT ignore this one
-!error.log
+!logger.log
 *.tlog
 *.vspscc
 *.vssscc
