@@ -1,6 +1,5 @@
 ﻿using Core.io;
 using Core.mapper;
-using Core.testdata;
 using DbAccess;
 using DBModel;
 using HttpAccess;
@@ -25,11 +24,6 @@ namespace Core
         public List<DbProduct>? AllApiProductsMapped { get; set; }
         #endregion
 
-
-        #region test data
-        private readonly TestApiProducts testApi = new TestApiProducts();
-        #endregion
-
         private readonly DbClient dbClient;
         private readonly Client client;
 
@@ -42,7 +36,7 @@ namespace Core
         public void Run()
         {
             Init();
-            ErrorLog.LogError("Start Synchronisation...");
+            Logger.LogInfo("Start Synchronisation...");
 
             #region Step 1
             //// Step 1
@@ -50,48 +44,53 @@ namespace Core
             //// Get all updated Data form the DB, map it and send depended on the flag to the delete or update endpoint
             try
             {
-                Console.WriteLine("Get products from DB with ERP flag !'C'");
+                Logger.LogInfo("Start Sync DB to API");
+
+                Logger.LogInfo("Get data from DB");
                 GetProductsFromDbWithErpChanged();
 
-                Console.WriteLine("Send update to API");
+                Logger.LogInfo("Send update to API");
                 SendProductsUpdateToApi().Wait();
 
-                Console.WriteLine("Send deletion to API");
+                Logger.LogInfo("Send deletion to API");
                 SendProductsDeleteToApi().Wait();
+
+                Logger.LogInfo("End Sync DB to API");
             }
             catch (Exception e)
             {
-                ErrorLog.LogError("Something went wrong while sync the data from the DB and sending to the API.", e);
+                Logger.LogError("Something went wrong while sync the data from the DB and sending to the API.", e);
             }
             #endregion
 
             #region Step 2
             //// Step 2
-            //// 
-            ////
+            //// Sync from API to DB
+            //// Get all products from the API, map it and compare with the DB data
             try
             {
-                Console.WriteLine("Get all products from HttpAccess");
+                Logger.LogInfo("Start Sync DB to API");
+
+                Logger.LogInfo("Get all products from HttpAccess");
                 GetProductsFromApi();
-                Console.WriteLine("Get all products from Db");
+                Logger.LogInfo("Get all products from Db");
                 GetAllDataFromDb();
-                Console.WriteLine("Compare DB with API");
+                Logger.LogInfo("Compare DB with API");
                 CompareApiWithDb();
-                Console.WriteLine("Send update to DB");
+                Logger.LogInfo("Send update to DB");
                 SendProductsToDb();
+
+                Logger.LogInfo("End Sync DB to API");
             }
             catch (Exception e)
             {
-                ErrorLog.LogError("Something went wrong while sync the data from the API to the Db.", e);
+                Logger.LogError("Something went wrong while sync the data from the API to the Db.", e);
                 
             }
             #endregion
 
-            ErrorLog.LogError("End Synchronisation");
-            foreach (string log in ErrorLog.GetErrors())
-            {
-                Console.WriteLine(log);
-            }
+            Logger.LogInfo("End Synchronisation");
+            Logger.LogEnd();
 
         }
 
@@ -136,7 +135,7 @@ namespace Core
             }
             catch (Exception ex)
             {
-                ErrorLog.LogError("Failed during sending update product to API.", ex);
+                Logger.LogError("Failed during sending update product to API.", ex);
                 throw;
             }
         }
@@ -155,7 +154,7 @@ namespace Core
             }
             catch (Exception ex)
             {
-                ErrorLog.LogError("Failed during sending delete product to API.", ex);
+                Logger.LogError("Failed during sending delete product to API.", ex);
                 throw;
             }
         }
@@ -170,10 +169,10 @@ namespace Core
             }
             catch (Exception e)
             {
-                ErrorLog.LogError("Failed to get Products from API.", e);
+                Logger.LogError("Failed to get Products from API.", e);
                 throw;
             }
-            Console.WriteLine($"Found {AllApiProducts.Count} products from API.");
+            Logger.LogInfo($"Found {AllApiProducts.Count} products from API.");
         }
 
         private void GetAllDataFromDb()

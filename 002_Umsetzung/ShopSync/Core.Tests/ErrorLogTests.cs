@@ -22,10 +22,10 @@ namespace Core.Tests
             Exception ex = new IndexOutOfRangeException(exString);
             
             //Act
-            ErrorLog.LogError(error, ex);
+            Logger.LogError(error, ex);
 
             //Asset
-            List<string> logs = ErrorLog.GetErrors();
+            List<string> logs = Logger.GetLogs();
             string firstLine = logs.FirstOrDefault() ?? string.Empty;
 
             Assert.IsTrue(firstLine.Contains(error), "Error message was not logged correctly.");
@@ -38,12 +38,12 @@ namespace Core.Tests
         public void GetStringArrayFromErrorLog()
         {
             // Arrange
-            string testMessage = "Test message from GetErrors test";
-            Exception testException = new InvalidOperationException("Test exception for GetErrors");
-            ErrorLog.LogError(testMessage, testException);
+            string testMessage = "Test message from GetLogs test";
+            Exception testException = new InvalidOperationException("Test exception for GetLogs");
+            Logger.LogError(testMessage, testException);
 
             //Act
-            List<string> logLines = ErrorLog.GetErrors();
+            List<string> logLines = Logger.GetLogs();
 
             //Asset
             Assert.IsNotNull(logLines, "Log lines should not be null.");

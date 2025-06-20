@@ -1,9 +1,9 @@
 ﻿namespace Core.io
 {
-    public static class ErrorLog
+    public static class Logger
     {
         private static readonly string ProjectRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", ".."));
-        private static readonly string LogPath = Path.Combine(ProjectRoot, "output", "error.log");
+        private static readonly string LogPath = Path.Combine(ProjectRoot, "output", "logger.log");
 
         public static void LogError(string message, Exception? ex = null)
         {
@@ -26,7 +26,22 @@
             }
         }
 
-        public static List<string> GetErrors()
+        public static void LogInfo(string message)
+        {
+            try
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(LogPath)!);
+                string newEntry = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] INFO: {message}{Environment.NewLine}";
+                string existingContent = File.Exists(LogPath) ? File.ReadAllText(LogPath) : string.Empty;
+                File.WriteAllText(LogPath, newEntry + existingContent);
+            }
+            catch
+            {
+                //
+            }
+        }
+
+        public static List<string> GetLogs()
         {
             List<string> errors = new List<string>();
             try
@@ -39,6 +54,14 @@
                 //
             }
             return errors;
+        }
+
+        public static void LogEnd()
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(LogPath)!);
+            string newEntry = new string('-', 60) + Environment.NewLine;
+            string existingContent = File.Exists(LogPath) ? File.ReadAllText(LogPath) : string.Empty;
+            File.WriteAllText(LogPath, newEntry + existingContent);
         }
     }
 }
