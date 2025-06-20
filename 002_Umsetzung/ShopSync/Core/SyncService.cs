@@ -173,7 +173,6 @@ namespace Core
                 ErrorLog.LogError("Failed to get Products from API.", e);
                 throw;
             }
-            //TODO: to be removed
             Console.WriteLine($"Found {AllApiProducts.Count} products from API.");
         }
 

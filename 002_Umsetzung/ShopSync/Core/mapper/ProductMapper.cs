@@ -84,12 +84,7 @@ namespace Core.mapper
                     out parsedDateTime
                 );
 
-            if (result)
-            {
-                return parsedDateTime;
-            }
-
-            return new DateTime();
+            return result ? parsedDateTime : new DateTime();
 
             //ParseStringToDateTime("1900-01-01 00:00:00");
         }

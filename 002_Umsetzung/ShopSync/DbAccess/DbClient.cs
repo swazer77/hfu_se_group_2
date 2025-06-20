@@ -37,7 +37,7 @@ public class DbClient
         List<DbProduct> products = dbContext.Product
             .Include(nameof(Context.Attributes))
             .Include(nameof(Context.Shop))
-            .Where(p => p.ErpChanged != 'U' && p.ShopChanged != 'C')
+            .Where(p => p.ErpChanged == 'U')
             .ToList();
         AddLocaleToProducts(products);
         return products;
